@@ -1,6 +1,6 @@
 {
-    "name": "jsencrypt",
-    "version": "3.3.1",
+    "name": "jsencrypt-adv",
+    "version": "3.3.1-beta",
     "description": "A Javascript library to perform OpenSSL RSA Encryption, Decryption, and Key Generation.",
     "main": "bin/jsencrypt.js",
     "module": "lib/index.js",
@@ -39,33 +39,21 @@
         "serve": "bundle exec jekyll server --config _config.build.yml",
         "test": "ts-mocha test/test.rsa.js"
     },
-    "author": "Travis Tidwell <travis@form.io>",
+    "author": "wusj",
     "contributors": [
         {
-            "name": "Travis Tidwell",
+            "name": "wusj",
             "email": "travis@form.io",
-            "url": "http://github.com/travist"
-        },
-        {
-            "name": "Antonio",
-            "url": "https://github.com/zoloft"
-        },
-        {
-            "name": "Julio",
-            "url": "https://github.com/jmgaya"
-        },
-        {
-            "name": "Taehyun Hwang",
-            "url": "https://github.com/HwangTaehyun"
+            "url": "https://github.com/xyjwsj"
         }
     ],
-    "homepage": "http://www.travistidwell.com/jsencrypt",
+    "homepage": "https://github.com/xyjwsj/jsencrypt-adv",
     "repository": {
         "type": "git",
-        "url": "git://github.com/travist/jsencrypt.git"
+        "url": "git://github.com/xyjwsj/jsencrypt-adv.git"
     },
     "bugs": {
-        "url": "http://github.com/travist/jsencrypt/issues"
+        "url": "http://github.com/xyjwsj/jsencrypt-adv/issues"
     },
     "license": "MIT"
 }
