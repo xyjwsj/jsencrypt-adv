@@ -1,5 +1,5 @@
-import { b64tohex, hex2b64 } from "./lib/jsbn/base64";
 import { JSEncryptRSAKey } from "./JSEncryptRSAKey";
+import { b64tohex, hex2b64 } from "./lib/jsbn/base64";
 const version = typeof process !== 'undefined'
     ? process.env?.npm_package_version
     : undefined;
@@ -88,6 +88,15 @@ export class JSEncrypt {
         }
     }
 
+    public decryptLong(str: string) {
+        // Return the decrypted string.
+        try {
+            return this.getKey().decryptLong(b64tohex(str));
+        } catch (ex) {
+            return false;
+        }
+    }
+
     /**
      * Proxy method for RSAKey object's encrypt, encrypt the string using the public
      * components of the rsa key object. Note that if the object was not set will be created
@@ -100,6 +109,15 @@ export class JSEncrypt {
         // Return the encrypted string.
         try {
             return hex2b64(this.getKey().encrypt(str));
+        } catch (ex) {
+            return false;
+        }
+    }
+
+    public encryptLong(str: string) {
+        // Return the encrypted string.
+        try {
+            return hex2b64(this.getKey().encryptLong(str));
         } catch (ex) {
             return false;
         }

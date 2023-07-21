@@ -4,8 +4,9 @@
 
 // convert a (hex) string to a bignum object
 
-import {BigInteger, nbi, parseBigInt} from "./jsbn";
-import {SecureRandom} from "./rng";
+import { b64tohex } from "./base64";
+import { BigInteger, nbi, parseBigInt } from "./jsbn";
+import { SecureRandom } from "./rng";
 
 
 // function linebrk(s,n) {
@@ -156,6 +157,27 @@ export class RSAKey {
         return h
     }
 
+    /**
+     * 长文本加密
+     * @param {string} string 待加密长文本
+     * @returns {string} 加密后的base64编码
+     */
+    public encryptLong(text:string) {
+        const maxLength = ((this.n.bitLength() + 7) >> 3) - 11;
+        let ct = "";
+
+        if (text.length > maxLength) {
+            const lt = text.match(/.{1,117}/g);
+            lt.forEach((entry:string) => {
+                const t1 = this.encrypt(entry);
+                ct += t1;
+            });
+            return ct;
+        }
+        const t = this.encrypt(text);            
+        return t;
+    }
+
 
     // RSAKey.prototype.setPrivate = RSASetPrivate;
     // Set the private key fields N, e, and d from hex strings
@@ -231,6 +253,31 @@ export class RSAKey {
         const m = this.doPrivate(c);
         if (m == null) { return null; }
         return pkcs1unpad2(m, (this.n.bitLength() + 7) >> 3);
+    }
+
+    /**
+     * 长文本解密
+     * @param {string} string 加密后的base64编码
+     * @returns {string} 解密后的原文
+     */
+    public decryptLong(text:string) {
+        const maxLength = (this.n.bitLength() + 7) >> 3;
+        text = b64tohex(text);
+        try {
+            if (text.length > maxLength) {
+                let ct = "";
+                const lt = text.match(/.{1,256}/g); // 128位解密。取256位
+                lt.forEach((entry) => {
+                    const t1 = this.decrypt(entry);
+                    ct += t1;
+                });
+                return ct;
+            }
+            const y = this.decrypt(text);
+            return y;
+        } catch (ex) {
+            return false;
+        }
     }
 
     // Generate a new random private key B bits long, using public expt E
