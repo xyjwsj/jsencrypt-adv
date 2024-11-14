@@ -82,7 +82,7 @@ export class JSEncrypt {
     public decrypt(str: string) {
         // Return the decrypted string.
         try {
-            return this.getKey().decrypt(b64tohex(str));
+            return this.getKey().decrypt(b64tohex(str), false);
         } catch (ex) {
             return false;
         }
@@ -91,7 +91,25 @@ export class JSEncrypt {
     public decryptLong(str: string) {
         // Return the decrypted string.
         try {
-            return this.getKey().decryptLong(b64tohex(str));
+            return this.getKey().decryptLong(b64tohex(str), false);
+        } catch (ex) {
+            return false;
+        }
+    }
+
+    public decryptPub(str: string) {
+        // Return the decrypted string.
+        try {
+            return this.getKey().decrypt(b64tohex(str), true);
+        } catch (ex) {
+            return false;
+        }
+    }
+
+    public decryptLongPub(str: string) {
+        // Return the decrypted string.
+        try {
+            return this.getKey().decryptLong(b64tohex(str), true);
         } catch (ex) {
             return false;
         }
