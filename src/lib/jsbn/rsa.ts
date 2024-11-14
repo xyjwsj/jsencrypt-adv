@@ -268,17 +268,12 @@ export class RSAKey {
      * @param {boolean} pubkey 是否公钥解密
      * @returns {string} 解密后的原文
      */
-    public decryptLong(text:string, pubkey: boolean) {
-        // var maxLength = ((k.n.bitLength()+7)>>3);
-
+    public decryptLong(text:string, pubkey: boolean) {            
         var _this = this;
         // 计算最大块大小，考虑填充
-        var maxLength = ((this.n.bitLength() + 7) >> 3) - 11;
-        // var maxLength = ((this.n.bitLength() + 7) >> 3);
+        var maxLength = ((this.n.bitLength() + 7) >> 3);        
         
         try {
-            // 如果输入文本是 Base64 编码的，需要先解码            
-            // if (text.length > maxLength) {
             if (text.length > maxLength * 2) {
                 console.log('decryptLong' + maxLength);
                 var ct_1 = "";
