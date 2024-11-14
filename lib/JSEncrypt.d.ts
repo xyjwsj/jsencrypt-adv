@@ -50,6 +50,14 @@ export declare class JSEncrypt {
      */
     decrypt(str: string): string | false;
     decryptLong(str: string): string | false;
+    decryptPub(str: string): string | false;
+    /**
+     * base64转btye数组
+     * @param base64
+     * @returns {Uint8Array}
+     */
+    base64ToArrayBuffer(base64: any): Uint8Array;
+    decryptLongPub(str: string): string | false;
     /**
      * Proxy method for RSAKey object's encrypt, encrypt the string using the public
      * components of the rsa key object. Note that if the object was not set will be created

@@ -285,6 +285,7 @@ keySizes.forEach(function (keySize, index) {
                 expect(dec).to.be.equal(test);
             });
         });
+        
 
         describe("#setPublicKey() X509 format", function () {
             var tmp = new JSEncrypt();

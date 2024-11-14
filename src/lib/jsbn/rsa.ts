@@ -4,7 +4,6 @@
 
 // convert a (hex) string to a bignum object
 
-import { b64tohex } from "./base64";
 import { BigInteger, nbi, parseBigInt } from "./jsbn";
 import { SecureRandom } from "./rng";
 
@@ -255,7 +254,7 @@ export class RSAKey {
             m = this.doPublic(c);
         } else {
             m = this.doPrivate(c);
-        }        
+        }                        
         if (m == null) { return null; }
         if (pubkey) {
             return pkcs1unpad2Pub(m, (this.n.bitLength() + 7) >> 3);    
@@ -270,23 +269,80 @@ export class RSAKey {
      * @returns {string} 解密后的原文
      */
     public decryptLong(text:string, pubkey: boolean) {
-        const maxLength = (this.n.bitLength() + 7) >> 3;
-        text = b64tohex(text);
+        // var maxLength = ((k.n.bitLength()+7)>>3);
+
+        var _this = this;
+        // 计算最大块大小，考虑填充
+        var maxLength = ((this.n.bitLength() + 7) >> 3) - 11;
+        // var maxLength = ((this.n.bitLength() + 7) >> 3);
+        
         try {
-            if (text.length > maxLength) {
-                let ct = "";
-                const lt = text.match(/.{1,256}/g); // 128位解密。取256位
-                lt.forEach((entry) => {
-                    const t1 = this.decrypt(entry, pubkey);
-                    ct += t1;
+            // 如果输入文本是 Base64 编码的，需要先解码            
+            // if (text.length > maxLength) {
+            if (text.length > maxLength * 2) {
+                console.log('decryptLong' + maxLength);
+                var ct_1 = "";
+                // 将文本分成适当长度的块进行解密
+                var lt = text.match(new RegExp('.{1,' + (maxLength * 2) + '}', 'g'));
+                // var lt = text.match(new RegExp('.{1,256}', 'g'));
+                lt.forEach(function (entry) {
+                    var t1 = _this.decrypt(entry, pubkey);                
+                    ct_1 += t1;
                 });
-                return ct;
+                return ct_1;
             }
-            const y = this.decrypt(text, pubkey);
+            
+            var y = this.decrypt(text, pubkey);        
             return y;
         } catch (ex) {
+            console.error('解密过程中出现错误：', ex);
             return false;
         }
+    }
+
+    /**
+     * 长文本解密
+     * @param {string} text 加密后的base64编码
+     * @param {boolean} pubkey 是否公钥解密
+     * @returns {string} 解密后的原文
+     */
+    public decryptLongAdv(text:Uint8Array, pubkey: boolean) {
+        let MAX_DECRYPT_BLOCK = 128;//分段解密最大长度限制为128字节
+     try {
+         let ct = "";
+         let t1;
+         let bufTmp;
+         let hexTmp;
+         let str = bytesToHex(text);
+         let buf = hexToBytes(str);
+         let inputLen = buf.length;
+
+         //开始长度
+         let offSet = 0;
+         //结束长度
+         let endOffSet = MAX_DECRYPT_BLOCK;
+
+         //分段解密
+         while (inputLen - offSet > 0) {
+             if (inputLen - offSet > MAX_DECRYPT_BLOCK) {
+                 bufTmp = buf.slice(offSet, endOffSet);
+                 hexTmp = bytesToHex(bufTmp);
+                 t1 = this.decrypt(hexTmp, false);
+                 ct += t1;
+             } else {
+                 bufTmp = buf.slice(offSet, inputLen);
+                 hexTmp = bytesToHex(bufTmp);
+                 t1 = this.decrypt(hexTmp, false);
+                 ct += t1;
+             }
+             offSet += MAX_DECRYPT_BLOCK;
+             endOffSet += MAX_DECRYPT_BLOCK;
+         }
+         return ct;
+     } catch (ex) {
+         console.log("RSA分段解密失败", ex)
+         return false;
+     }
     }
 
     // Generate a new random private key B bits long, using public expt E
@@ -416,7 +472,7 @@ function pkcs1unpad2(d:BigInteger, n:number):string {
             ret += String.fromCharCode(((c & 15) << 12) | ((b[i + 1] & 63) << 6) | (b[i + 2] & 63));
             i += 2;
         }
-    }
+    }    
     return ret;
 }
 
@@ -443,8 +499,33 @@ function pkcs1unpad2Pub(d:BigInteger, n:number):string {
             ret += String.fromCharCode(((c & 15) << 12) | ((b[i + 1] & 63) << 6) | (b[i + 2] & 63));
             i += 2;
         }
+        // console.log('pkcs1unpad2Pub=' + ret)
     }
     return ret;
+}
+
+/**
+ * 16进制转byte数组
+ */
+function hexToBytes(hex: any) {
+    let bytes = [];
+    for (let c = 0; c < hex.length; c += 2)
+        bytes.push(parseInt(hex.substr(c, 2), 16));
+    return bytes;
+}
+
+/**
+ * byte数组转16进制
+ * @param bytes
+ * @returns {string}
+ */
+function bytesToHex(bytes: any) {
+    let hex = [];
+    for (let i = 0; i < bytes.length; i++) {
+        hex.push((bytes[i] >>> 4).toString(16));
+        hex.push((bytes[i] & 0xF).toString(16));
+    }
+    return hex.join("");
 }
 
 // https://tools.ietf.org/html/rfc3447#page-43

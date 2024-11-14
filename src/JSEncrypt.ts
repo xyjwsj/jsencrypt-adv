@@ -106,8 +106,24 @@ export class JSEncrypt {
         }
     }
 
+    /**
+     * base64转btye数组
+     * @param base64
+     * @returns {Uint8Array}
+     */
+    public base64ToArrayBuffer(base64: any) {
+        let binary_string = window.atob(base64);
+        let len = binary_string.length;
+        let bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+
+        return bytes;
+        }
+
     public decryptLongPub(str: string) {
-        // Return the decrypted string.
+        // Return the decrypted string.        
         try {
             return this.getKey().decryptLong(b64tohex(str), true);
         } catch (ex) {

@@ -1,4 +1,4 @@
-import {int2char} from "./util";
+import { int2char } from "./util";
 
 const b64map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const b64pad = "=";
@@ -21,6 +21,33 @@ export function hex2b64(h:string) {
     while ((ret.length & 3) > 0) {
         ret += b64pad;
     }
+    return ret;
+}
+
+export function b64tohexAdv(s: string) {
+    const b64map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const b64pad = "=";
+    let ret = "";
+    let i, k = 0, slop;
+    for (let j = 0; j < s.length; ++j) {
+        if (s.charAt(j) === b64pad) break;
+        const v = b64map.indexOf(s.charAt(j));
+        if (v < 0) continue;
+        if (k === 0) {
+            ret += int2char(v >> 2);
+            slop = (v & 3) << 4;
+            k = 1;
+        } else if (k === 1) {
+            ret += int2char(slop | (v >> 4));
+            slop = (v & 15) << 2;
+            k = 2;
+        } else if (k === 2) {
+            ret += int2char(slop | (v >> 6));
+            ret += int2char(v & 63);
+            k = 0;
+        }
+    }
+    if (k === 1) ret += int2char(slop);
     return ret;
 }
 

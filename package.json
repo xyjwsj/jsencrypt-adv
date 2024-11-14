@@ -1,6 +1,6 @@
 {
     "name": "jsencrypt-adv",
-    "version": "3.3.2-beta-1",
+    "version": "3.3.2-beta-7",
     "description": "A Javascript library to perform OpenSSL RSA Encryption, Decryption, and Key Generation.",
     "main": "bin/jsencrypt.js",
     "module": "lib/index.js",
@@ -37,7 +37,8 @@
         "build:prod": "tsc && tsc --project tsconfig-def.json && webpack --config webpack.prod.js",
         "build": "npm run build:dev && npm run build:test && npm run build:prod",
         "serve": "bundle exec jekyll server --config _config.build.yml",
-        "test": "ts-mocha test/test.rsa.js"
+        "test": "ts-mocha test/test.rsa.js",
+        "testExt": "ts-mocha test/test.extend.js"
     },
     "author": "wusj",
     "contributors": [
